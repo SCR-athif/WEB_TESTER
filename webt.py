@@ -80,6 +80,12 @@ def check_security_headers(url):
             print("\nServer header is disclosed:", response_headers["Server"])
         else:
             print("\nServer header is not present.")
+        # Check if "X-Powered-BY" header is present
+        print("\n"+"\033[1m" + "Checking X-Powered-BY Header disclosure" + "\033[0m")
+        if "x-powered-by" in response_headers:
+            print("\nX-Powered-BY header is disclosed:", response_headers["x-powered-by"])
+        else:
+            print("\nX-Powered-BY header is not present.")
     except requests.exceptions.RequestException as e:
         print("Error occurred while fetching headers:", e)
 def check_options_method_allowed(url):
