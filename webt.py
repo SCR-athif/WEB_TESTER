@@ -94,7 +94,7 @@ def check_options_method_allowed(url):
         decoded_output = output.decode('utf-8')
         # Check if the response includes "Allow" header
         if 'Access-Control-Allow-Methods:' in decoded_output:
-            print("OPTIONS method is allowed.")
+            print("OPTIONS method is Enabled.")
             # Extract allowed methods from the response
             allowed_methods = [method.strip() for method in decoded_output.split('Access-Control-Allow-Methods:')[1].split('\n')[0].split(',')]
             print("Allowed methods:", allowed_methods)
@@ -104,7 +104,7 @@ def check_options_method_allowed(url):
             allowed_methods = [method.strip() for method in decoded_output.split('Allow:')[1].split('\n')[0].split(',')]
             print("Allowed methods:", allowed_methods)
         else:
-            print("OPTIONS method is not allowed.")
+            print("OPTIONS method is not Enabled.")
 
     except subprocess.CalledProcessError as e:
         print("Error occurred while running curl command:", e.output.decode('utf-8'))
@@ -121,6 +121,8 @@ def check__cookie_without_secure_flag(url):
         decoded_output = output.decode('utf-8')
         if 'Set-Cookie' in decoded_output:
             if 'Secure'in decoded_output:
+                print("\nSecure flag are set: Safe")
+            elif 'secure'in decoded_output:
                 print("\nSecure flag are set: Safe")
             else:
                 print("\nCookies without secure flagset : Vulnerable")
