@@ -29,17 +29,38 @@ def check_ssl_version_and_ciphers(url):
         "--mozilla_config=intermediate",
         f"{host}:{port}"
     ]
-    print("\n"+"\033[1m" + "Checking SSL Ciphers" + "\033[0m")
+    print("\n" + "\033[1m" + "Checking SSL Ciphers" + "\033[0m")
     try:
         # Run sslyze as a subprocess
-        output= subprocess.check_output(command, stderr=subprocess.STDOUT, text=True)
+        output = subprocess.check_output(command, stderr=subprocess.STDOUT, text=True)
 
         # Print the output
-        print(output)
+        print(output.strip())  # Remove leading/trailing whitespace
+
+        # Check for weak ciphers in output
+        if "LOW" in output:
+            weak_cipher = "Weak cipher supported"
+        else:
+            weak_cipher = ""
+
+        # Check for RC4 support
+        if "Legacy RC4 Algorithm               OK - Supported" in output:
+            rc4_vulnerability = "Vulnerable to RC4"
+        else:
+            rc4_vulnerability = ""
+
+        # Check for outdated TLS versions
+        if "TLSv1" in output or "TLSv1.1" in output:
+            tls_outdated = "Outdated TLS version(s) used"
+        else:
+            tls_outdated = ""
+
+        return weak_cipher, rc4_vulnerability, tls_outdated
     except subprocess.CalledProcessError as e:
         # If sslyze returns a non-zero exit code, print the error message
         print("Error:", e.output)
         sys.exit(1)
+
 def check_security_headers(url):
     try:
         # Send a HEAD request to get only the response header
@@ -71,7 +92,7 @@ def check_security_headers(url):
         if missing_headers:
             print("\033[1m"+"\nThese headers are not present:"+"\033[0m")
             for header in missing_headers:
-                print(header)
+                print("Missing Security header: "+header+" is not implemented")
         else:
             print("\033[1m"+"\nAll security headers are present."+"\033[0m")
 
@@ -101,7 +122,7 @@ def check_options_method_allowed(url):
             allowed_methods = [method.strip() for method in decoded_output.split('Access-Control-Allow-Methods:')[1].split('\n')[0].split(',')]
             print("Allowed methods:", allowed_methods)
         elif 'Allow:' in decoded_output:
-            print("OPTIONS method is allowed.")
+            print("\nOPTION method is Enabled.")
             # Extract allowed methods from the response
             allowed_methods = [method.strip() for method in decoded_output.split('Allow:')[1].split('\n')[0].split(',')]
             print("Allowed methods:", allowed_methods)
@@ -130,8 +151,8 @@ def check__cookie_without_secure_flag(url):
             if 'Secure'in decoded_output:
                 print("\nSecure flag are set: Safe")
             else:
-                print("\nCookies without secure flagset : Vulnerable")
-
+                print("\nCookies without secure flag is set : Vulnerable")
+                   
         else:
             print("\nNo cookies are set.")
 
