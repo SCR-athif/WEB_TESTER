@@ -53,7 +53,8 @@ def check_security_headers(url):
             "Content-Security-Policy", 
             "X-Frame-Options", 
             "X-Content-Type-Options", 
-            "Referrer-Policy"
+            "Referrer-Policy",
+            "X-XSS-Protection"
         ]
 
         # Check if each security header is present in the response headers
@@ -70,7 +71,7 @@ def check_security_headers(url):
         if missing_headers:
             print(Fore.YELLOW+"\033[1m"+"\nThese headers are not present:"+"\033[0m")
             for header in missing_headers:
-                print(Fore.RED+"Missing Security Header: "+header+" is not implemented")
+                print(Fore.RED+header+" header is not implemented")
         else:
             print(Fore.GREEN+"\033[1m"+"\nAll security headers are present."+"\033[0m")
 
@@ -154,6 +155,7 @@ def poc_curl(url):
  
     # Command to execute
     command = f"curl {url} -I -k"
+    print(command+"\n")
 
     # Execute the command
     exit_code = os.system(command)
@@ -169,8 +171,8 @@ def poc_opt(url):
     print(Fore.BLUE+"\n"+"\033[1m" + "OPTION POC" + "\033[0m"+"\n")
  
     # Command to execute
-    command = f"curl -X OPTION {url} -I -k"
-
+    command = f"curl -X OPTIONS {url} -I -k"
+    print(command+"\n")
     # Execute the command
     exit_code = os.system(command)
 
