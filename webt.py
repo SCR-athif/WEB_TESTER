@@ -53,8 +53,7 @@ def check_security_headers(url):
             "Content-Security-Policy", 
             "X-Frame-Options", 
             "X-Content-Type-Options", 
-            "Referrer-Policy",
-            "X-XSS-Protection"
+            "Referrer-Policy"
         ]
 
         # Check if each security header is present in the response headers
